@@ -3,33 +3,24 @@ name: Build ZMK Firmware with JIS Conversion
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  build:
-    runs-on: ubuntu-22.04
-    name: Build ZMK Firmware
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - board: seeeduino_xiao_ble
-            shield: roBa_R
-            snippet: studio-rpc-usb-uart
-          - board: seeeduino_xiao_ble
-            shield: roBa_L
-          - board: seeeduino_xiao_ble
-            shield: settings_reset
-
+  # JIS配列を作成
+  prepare_jis:
+    runs-on: ubuntu-latest
     steps:
-      # 読込
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # JIS配列に置換
+      # ビルド用の「jis_config」フォルダを作成してコピー
       - name: Automatically Convert US Keymap to JIS
         run: |
-          KEYMAP_FILE="config/roBa.keymap"
+          mkdir -p jis_config
+          cp -r config/* jis_config/
+          
+          KEYMAP_FILE="jis_config/roBa.keymap"
           if [ -f "$KEYMAP_FILE" ]; then
             echo "Converting $KEYMAP_FILE from US to JIS layout..."
             
+            # JIS化置換ルール
             sed -i 's/&kp AT/&kp MINUS/g'       $KEYMAP_FILE
             sed -i 's/&kp CARET/&kp EQUAL/g'    $KEYMAP_FILE
             sed -i 's/&kp AMPS/&kp CARET/g'     $KEYMAP_FILE
@@ -56,12 +47,27 @@ jobs:
             echo "No keymap file found, skipping conversion."
           fi
 
-      # コンパイル実行
-      - name: Build ZMK matrix
-        uses: zmkfirmware/zmk/.github/actions/build-user-config-matrix@v0.3-branch
-        with:
-          board: ${{ matrix.board }}
-          shield: ${{ matrix.shield }}
-          snippet: ${{ matrix.snippet }}
-          config_path: "config"
-          archive_name: "roBa_firmware"
+      # 変更があればコミット
+      - name: Commit and Push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # jis_config フォルダをメインブランチにPush
+          git add jis_config/
+          if ! git diff --cached --exit-code; then
+            git commit -m "[JIS-Build] Update converted JIS config"
+            git push origin HEAD:${{ github.ref }}
+          else
+            echo "No changes to commit"
+          fi
+
+  # JIS化されたフォルダを指定してビルド
+  build:
+    needs: prepare_jis
+    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3-branch
+    with:
+      # jis_config」を読込
+      config_path: "jis_config"
+      archive_name: "roBa_firmware"
+    secrets: inherit
