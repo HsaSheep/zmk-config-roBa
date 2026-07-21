@@ -1,5 +1,59 @@
+name: Build ZMK Firmware with JIS Conversion
+
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
+  # ビルドが走る前に、ファイルをJIS配列へ置換する事前ジョブ
+  prepare_jis:
+    runs-on: ubuntu-latest
+    outputs:
+      converted: true
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Automatically Convert US Keymap to JIS
+        run: |
+          KEYMAP_FILE="config/roBa.keymap"
+          if [ -f "$KEYMAP_FILE" ]; then
+            echo "Converting $KEYMAP_FILE from US to JIS layout..."
+            # Keymap EditorのUS記号コードをJIS環境用の物理キーに置換
+            sed -i 's/&kp AT/&kp MINUS/g'       $KEYMAP_FILE
+            sed -i 's/&kp CARET/&kp EQUAL/g'    $KEYMAP_FILE
+            sed -i 's/&kp AMPS/&kp CARET/g'     $KEYMAP_FILE
+            sed -i 's/&kp ASTRK/&kp AMPS/g'     $KEYMAP_FILE
+            sed -i 's/&kp LPAR/&kp ASTRK/g'     $KEYMAP_FILE
+            sed -i 's/&kp RPAR/&kp LPAR/g'      $KEYMAP_FILE
+            sed -i 's/&kp MINUS/&kp RPAR/g'     $KEYMAP_FILE
+            sed -i 's/&kp EQUAL/&kp MINUS/g'    $KEYMAP_FILE
+            sed -i 's/&kp PLUS/&kp SQT/g'       $KEYMAP_FILE
+            
+            sed -i 's/&kp LBKT/&kp RAUI/g'      $KEYMAP_FILE
+            sed -i 's/&kp RBKT/&kp BSLH/g'      $KEYMAP_FILE
+            sed -i 's/&kp BSLH/&kp INT3/g'      $KEYMAP_FILE
+            sed -i 's/&kp SQT/&kp COLON/g'      $KEYMAP_FILE
+            sed -i 's/&kp COLON/&kp ASTRK/g'    $KEYMAP_FILE
+            sed -i 's/&kp SEMI/&kp PLUS/g'      $KEYMAP_FILE
+            sed -i 's/&kp TILDE/&kp EQUAL/g'    $KEYMAP_FILE
+            sed -i 's/&kp GRAVE/&kp SQT/g'      $KEYMAP_FILE
+            echo "Conversion complete!"
+          else
+            echo "Warning: $KEYMAP_FILE not found."
+          fi
+
+      # 置換が終わったソースコード一式を、次のジョブ（公式ビルド）へ引き渡すために一時保存
+      - name: Upload temporary converted source
+        uses: actions/upload-artifact@v4
+        with:
+          name: converted-config
+          path: .
+          include-hidden-files: true
+
+  # 公式のReusable Workflow（JIS化されたソースを読み込んで自動ビルド）
   build:
+    needs: prepare_jis # 上記の事前処理が終わるまで待つ
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3-branch
+    with:
+      # ワークフローに「事前保存したJIS化済みのソースコード」を上書き読み込みさせる指定
+      archive_name: converted-config 
+    secret: inherit
