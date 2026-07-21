@@ -20,25 +20,29 @@ jobs:
           KEYMAP_FILE="config/roBa.keymap"
           if [ -f "$KEYMAP_FILE" ]; then
             echo "Converting $KEYMAP_FILE from US to JIS layout..."
-            # Keymap EditorのUS記号コードをJIS環境用の物理キーに置換
-            sed -i 's/&kp AT/&kp MINUS/g'       $KEYMAP_FILE
-            sed -i 's/&kp CARET/&kp EQUAL/g'    $KEYMAP_FILE
-            sed -i 's/&kp AMPS/&kp CARET/g'     $KEYMAP_FILE
-            sed -i 's/&kp ASTRK/&kp AMPS/g'     $KEYMAP_FILE
-            sed -i 's/&kp LPAR/&kp ASTRK/g'     $KEYMAP_FILE
-            sed -i 's/&kp RPAR/&kp LPAR/g'      $KEYMAP_FILE
-            sed -i 's/&kp MINUS/&kp RPAR/g'     $KEYMAP_FILE
-            sed -i 's/&kp EQUAL/&kp MINUS/g'    $KEYMAP_FILE
-            sed -i 's/&kp PLUS/&kp SQT/g'       $KEYMAP_FILE
             
-            sed -i 's/&kp LBKT/&kp RAUI/g'      $KEYMAP_FILE
-            sed -i 's/&kp RBKT/&kp BSLH/g'      $KEYMAP_FILE
-            sed -i 's/&kp BSLH/&kp INT3/g'      $KEYMAP_FILE
-            sed -i 's/&kp SQT/&kp COLON/g'      $KEYMAP_FILE
-            sed -i 's/&kp COLON/&kp ASTRK/g'    $KEYMAP_FILE
-            sed -i 's/&kp SEMI/&kp PLUS/g'      $KEYMAP_FILE
-            sed -i 's/&kp TILDE/&kp EQUAL/g'    $KEYMAP_FILE
-            sed -i 's/&kp GRAVE/&kp SQT/g'      $KEYMAP_FILE
+            # 置換ルール
+            sed -i 's/&kp AT/&kp MINUS/g'       $KEYMAP_FILE # US [@] -> JIS [-] (ほ) で [@] を出力
+            sed -i 's/&kp CARET/&kp EQUAL/g'    $KEYMAP_FILE # US [^] -> JIS [=] (へ) で [^] を出力
+            sed -i 's/&kp AMPS/&kp CARET/g'     $KEYMAP_FILE # US [&] -> JIS [^] (や) で [&] を出力
+            sed -i 's/&kp ASTRK/&kp AMPS/g'     $KEYMAP_FILE # US [*] -> JIS [&] (ゆ) で [*] を出力
+            sed -i 's/&kp LPAR/&kp ASTRK/g'     $KEYMAP_FILE # US [(] -> JIS [*] (よ) で [(] を出力
+            sed -i 's/&kp RPAR/&kp LPAR/g'      $KEYMAP_FILE # US [)] -> JIS [(] (を) で [)] を出力
+            sed -i 's/&kp MINUS/&kp RPAR/g'     $KEYMAP_FILE # US [-] -> JIS [)] (わ) で [-] を出力
+            sed -i 's/&kp EQUAL/&kp MINUS/g'    $KEYMAP_FILE # US [=] -> JIS [-] (ほ) で [=] を出力
+            sed -i 's/&kp PLUS/&kp SQT/g'       $KEYMAP_FILE # US [+] -> JIS ['] (け) で [+] を出力
+            
+            sed -i 's/&kp LBKT/&kp REUSABLE_REPLACE_LBKT/g' $KEYMAP_FILE # 一時退避
+            sed -i 's/&kp RBKT/&kp BSLH/g'      $KEYMAP_FILE # US []] -> JIS [\] (む) で []] を出力
+            sed -i 's/&kp REUSABLE_REPLACE_LBKT/&kp RBKT/g' $KEYMAP_FILE # US [[] -> JIS []] (む) で [[] を出力
+            
+            sed -i 's/&kp BSLH/&kp INTERNATIONAL_1/g' $KEYMAP_FILE # US [\] -> JIS [\_] (ろ) で [\] を出力
+            sed -i 's/&kp SQT/&kp COLON/g'      $KEYMAP_FILE # US ['] -> JIS [:] (け) で ['] を出力
+            sed -i 's/&kp COLON/&kp ASTRK/g'    $KEYMAP_FILE # US [:] -> JIS [*] (け) で [:] を出力
+            sed -i 's/&kp SEMI/&kp PLUS/g'      $KEYMAP_FILE # US [;] -> JIS [+] (れ) で [;] を出力
+            sed -i 's/&kp TILDE/&kp EQUAL/g'    $KEYMAP_FILE # US [~] -> JIS [=] (へ) で [~] を出力
+            sed -i 's/&kp GRAVE/&kp SQT/g'      $KEYMAP_FILE # US [`] -> JIS ['] (け) で [`] を出力
+            
             echo "Conversion complete!"
           else
             echo "Warning: $KEYMAP_FILE not found."
