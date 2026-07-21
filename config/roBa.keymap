@@ -22,8 +22,7 @@
             compatible = "zmk,behavior-layout-shift-key-press";
             #binding-cells = <1>;
             label = "LAYOUT_SHIFT_KEY_PRESS";
-
-            key-press-behaviors = <&original_key_press>;
+            bindings = <&original_key_press>;
             toggle-behavior = <&tog_ls>;
         };
     };
