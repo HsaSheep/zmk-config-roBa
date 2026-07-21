@@ -3,36 +3,25 @@ name: Build ZMK Firmware with JIS Conversion
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  build:
+  # ブランチを作ってJIS置換する。上書き指定
+  prepare_jis:
     runs-on: ubuntu-latest
-    name: Build ZMK Firmware
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - board: seeeduino_xiao_ble
-            shield: roBa_R
-            snippet: studio-rpc-usb-uart
-          - board: seeeduino_xiao_ble
-            shield: roBa_L
-          - board: seeeduino_xiao_ble
-            shield: settings_reset
-
-    # ZMK最新のビルド環境（Dockerコンテナ）を利用
-    container:
-      image: zmkfirmware/zmk-build-ptr:stable
-
+    # 無限ループを防止
+    if: "!contains(github.event.head_commit.message, '[JIS-Temp]')"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
-      # ビルド直前に、実行環境のメモリ上だけでJIS配列に自動置換
       - name: Automatically Convert US Keymap to JIS
         run: |
           KEYMAP_FILE="config/roBa.keymap"
           if [ -f "$KEYMAP_FILE" ]; then
             echo "Converting $KEYMAP_FILE from US to JIS layout..."
             
+            # JIS化置換ルール
             sed -i 's/&kp AT/&kp MINUS/g'       $KEYMAP_FILE
             sed -i 's/&kp CARET/&kp EQUAL/g'    $KEYMAP_FILE
             sed -i 's/&kp AMPS/&kp CARET/g'     $KEYMAP_FILE
@@ -55,16 +44,24 @@ jobs:
             sed -i 's/&kp GRAVE/&kp SQT/g'      $KEYMAP_FILE
             
             echo "Conversion complete!"
-          else
-            echo "Warning: $KEYMAP_FILE not found."
           fi
 
-      # 公式のビルドエンジンでファームウェアを作成
-      - name: Build ZMK firmware
-        uses: zmkfirmware/zmk-build-action@v3
-        with:
-          name: 'roBa_firmware'
-          board: ${{ matrix.board }}
-          shield: ${{ matrix.shield }}
-          snippet: ${{ matrix.snippet }}
-          config_path: 'config'
+      # 「temp-jis-build」というビルド専用のブランチに強制プッシュ
+      - name: Push to temporary build branch
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git checkout -b temp-jis-build
+          git add config/roBa.keymap
+          git commit -m "[JIS-Temp] Temp convert for build"
+          git push origin temp-jis-build --force
+
+  # 公式Reusableでビルド
+  build:
+    needs: prepare_jis
+    # 置換済みの「temp-jis-build」ブランチにあるReusable Workflowを呼び出す
+    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3-branch
+    with:
+      ref: "temp-jis-build"
+      archive_name: "roBa_firmware"
+    secrets: inherit
