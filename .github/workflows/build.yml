@@ -3,37 +3,20 @@ name: Build ZMK Firmware with JIS Conversion
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  build:
+  # JISに置換
+  prepare_jis:
     runs-on: ubuntu-latest
-    name: Build ZMK Firmware
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - board: seeeduino_xiao_ble
-            shield: roBa_R
-            snippet: studio-rpc-usb-uart
-          - board: seeeduino_xiao_ble
-            shield: roBa_L
-          - board: seeeduino_xiao_ble
-            shield: settings_reset
-
-    # ZMK公式が用意している最新のビルド環境（Dockerコンテナ）を直接呼び出します。
-    container:
-      image: zmkfirmware/zmk-build-ptr:stable
-
     steps:
-      # リポジトリ（US配列のまま）を読込
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # JIS配列に置換
       - name: Automatically Convert US Keymap to JIS
         run: |
           KEYMAP_FILE="config/roBa.keymap"
           if [ -f "$KEYMAP_FILE" ]; then
             echo "Converting $KEYMAP_FILE from US to JIS layout..."
             
+            # JIS化置換ルール
             sed -i 's/&kp AT/&kp MINUS/g'       $KEYMAP_FILE
             sed -i 's/&kp CARET/&kp EQUAL/g'    $KEYMAP_FILE
             sed -i 's/&kp AMPS/&kp CARET/g'     $KEYMAP_FILE
@@ -56,31 +39,24 @@ jobs:
             sed -i 's/&kp GRAVE/&kp SQT/g'      $KEYMAP_FILE
             
             echo "Conversion complete!"
+          else
+            echo "No keymap file found, skipping conversion."
           fi
 
-      # 3. ZMK公式のビルドスクリプト（west）を直接実行してコンパイル
-      - name: West Init
-        run: west init -l config
-      - name: West Update
-        run: west update
-      - name: West Zephyr Export
-        run: west zephyr-export
-        
-      - name: West Build
-        run: |
-          SHIELD_ARG=""
-          if [ ! -z "${{ matrix.shield }}" ]; then
-            SHIELD_ARG="-DSHIELD=${{ matrix.shield }}"
-          fi
-          SNIPPET_ARG=""
-          if [ ! -z "${{ matrix.snippet }}" ]; then
-            SNIPPET_ARG="-DSNIPPET=${{ matrix.snippet }}"
-          fi
-          west build -s zmk/app -b ${{ matrix.board }} -- $SHIELD_ARG $SNIPPET_ARG -DZMK_CONFIG=$GITHUB_WORKSPACE/config
-
-      # 出来上がったファームウェア（UF2等）をダウンロードできるように保存
-      - name: Upload firmware
+      # JIS置換状態のフォルダ一式を「zmk-config」という名前で一時保存
+      - name: Upload temporary converted config
         uses: actions/upload-artifact@v4
         with:
-          name: 'roBa_firmware_${{ matrix.shield }}'
-          path: build/zephyr/zmk.*
+          name: zmk-config
+          path: .
+          include-hidden-files: true
+
+  # Reusableを使いつつ、JIS化された一時フォルダを上書きで読込
+  build:
+    needs: prepare_jis
+    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3-branch
+    with:
+      # zmk-configで上書き
+      build_matrix_path: "zmk-config"
+      archive_name: "roBa_firmware"
+    secrets: inherit
