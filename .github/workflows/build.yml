@@ -3,25 +3,37 @@ name: Build ZMK Firmware with JIS Conversion
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  # ブランチを作ってJIS置換する。上書き指定
-  prepare_jis:
+  build:
     runs-on: ubuntu-latest
-    # 無限ループを防止
-    if: "!contains(github.event.head_commit.message, '[JIS-Temp]')"
+    name: Build ZMK Firmware
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - board: seeeduino_xiao_ble
+            shield: roBa_R
+            snippet: studio-rpc-usb-uart
+          - board: seeeduino_xiao_ble
+            shield: roBa_L
+          - board: seeeduino_xiao_ble
+            shield: settings_reset
+
+    # ZMK公式が用意している最新のビルド環境（Dockerコンテナ）を直接呼び出します。
+    container:
+      image: zmkfirmware/zmk-build-ptr:stable
+
     steps:
+      # リポジトリ（US配列のまま）を読込
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
 
+      # JIS配列に置換
       - name: Automatically Convert US Keymap to JIS
         run: |
           KEYMAP_FILE="config/roBa.keymap"
           if [ -f "$KEYMAP_FILE" ]; then
             echo "Converting $KEYMAP_FILE from US to JIS layout..."
             
-            # JIS化置換ルール
             sed -i 's/&kp AT/&kp MINUS/g'       $KEYMAP_FILE
             sed -i 's/&kp CARET/&kp EQUAL/g'    $KEYMAP_FILE
             sed -i 's/&kp AMPS/&kp CARET/g'     $KEYMAP_FILE
@@ -46,21 +58,29 @@ jobs:
             echo "Conversion complete!"
           fi
 
-      # 「temp-jis-build」というビルド専用のブランチに強制プッシュ
-      - name: Push to temporary build branch
+      # 3. ZMK公式のビルドスクリプト（west）を直接実行してコンパイル
+      - name: West Init
+        run: west init -l config
+      - name: West Update
+        run: west update
+      - name: West Zephyr Export
+        run: west zephyr-export
+        
+      - name: West Build
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git checkout -b temp-jis-build
-          git add config/roBa.keymap
-          git commit -m "[JIS-Temp] Temp convert for build"
-          git push origin temp-jis-build --force
+          SHIELD_ARG=""
+          if [ ! -z "${{ matrix.shield }}" ]; then
+            SHIELD_ARG="-DSHIELD=${{ matrix.shield }}"
+          fi
+          SNIPPET_ARG=""
+          if [ ! -z "${{ matrix.snippet }}" ]; then
+            SNIPPET_ARG="-DSNIPPET=${{ matrix.snippet }}"
+          fi
+          west build -s zmk/app -b ${{ matrix.board }} -- $SHIELD_ARG $SNIPPET_ARG -DZMK_CONFIG=$GITHUB_WORKSPACE/config
 
-  # 公式Reusableでビルド
-  build:
-    needs: prepare_jis
-    # 置換済みの「temp-jis-build」ブランチにあるReusable Workflowを呼び出す
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3-branch
-    with:
-      archive_name: "roBa_firmware"
-    secrets: inherit
+      # 出来上がったファームウェア（UF2等）をダウンロードできるように保存
+      - name: Upload firmware
+        uses: actions/artifacts@v4
+        with:
+          name: 'roBa_firmware_${{ matrix.shield }}'
+          path: build/zephyr/zmk.*
