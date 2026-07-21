@@ -62,6 +62,5 @@ jobs:
     # 置換済みの「temp-jis-build」ブランチにあるReusable Workflowを呼び出す
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3-branch
     with:
-      ref: "temp-jis-build"
       archive_name: "roBa_firmware"
     secrets: inherit
