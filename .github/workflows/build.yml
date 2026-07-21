@@ -3,14 +3,17 @@ name: Build ZMK Firmware with JIS Conversion
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  # ビルドが走る前に、ファイルをJIS配列へ置換する事前ジョブ
+  # Keymap EditorのUS配列をJIS配列に自動置換してコミットする
   prepare_jis:
     runs-on: ubuntu-latest
-    outputs:
-      converted: true
+    # 無限ループ防止のため、自動コミットによる再実行をスキップ
+    if: "!contains(github.event.head_commit.message, '[JIS Convert]')"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          # 書き換えた内容をリポジトリに反映するための権限設定
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Automatically Convert US Keymap to JIS
         run: |
@@ -41,19 +44,25 @@ jobs:
             echo "Warning: $KEYMAP_FILE not found."
           fi
 
-      # 置換が終わったソースコード一式を、次のジョブ（公式ビルド）へ引き渡すために一時保存
-      - name: Upload temporary converted source
-        uses: actions/upload-artifact@v4
-        with:
-          name: converted-config
-          path: .
-          include-hidden-files: true
+      # 変更があれば自動でコミットしてリポジトリに反映
+      - name: Commit and Push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          if ! git diff --exit-code; then
+            git add config/roBa.keymap
+            git commit -m "[JIS Convert] Auto convert keymap to JIS"
+            git push origin HEAD:${{ github.ref }}
+          else
+            echo "No changes to commit"
+          fi
 
-  # 公式のReusable Workflow（JIS化されたソースを読み込んで自動ビルド）
+  # 変更された最新リポジトリを使い、公式Reusableでビルドする
   build:
-    needs: prepare_jis # 上記の事前処理が終わるまで待つ
+    needs: prepare_jis
+    # 常に最新に変換されたブランチからビルドするため、元の実行がスキップされてもこちらは動かす
+    if: always() && (needs.prepare_jis.result == 'success' || needs.prepare_jis.result == 'skipped')
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3-branch
     with:
-      # ワークフローに「事前保存したJIS化済みのソースコード」を上書き読み込みさせる指定
-      archive_name: converted-config 
-    secret: inherit
+      archive_name: "roBa_firmware"
+    secrets: inherit
