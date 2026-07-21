@@ -3,70 +3,68 @@ name: Build ZMK Firmware with JIS Conversion
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  # Keymap EditorのUS配列をJIS配列に自動置換してコミットする
-  prepare_jis:
+  build:
     runs-on: ubuntu-latest
-    # 無限ループ防止のため、自動コミットによる再実行をスキップ
-    if: "!contains(github.event.head_commit.message, '[JIS Convert]')"
+    name: Build ZMK Firmware
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - board: seeeduino_xiao_ble
+            shield: roBa_R
+            snippet: studio-rpc-usb-uart
+          - board: seeeduino_xiao_ble
+            shield: roBa_L
+          - board: seeeduino_xiao_ble
+            shield: settings_reset
+
+    # ZMK最新のビルド環境（Dockerコンテナ）を利用
+    container:
+      image: zmkfirmware/zmk-build-ptr:stable
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          # 書き換えた内容をリポジトリに反映するための権限設定
-          token: ${{ secrets.GITHUB_TOKEN }}
 
+      # ビルド直前に、実行環境のメモリ上だけでJIS配列に自動置換
       - name: Automatically Convert US Keymap to JIS
         run: |
           KEYMAP_FILE="config/roBa.keymap"
           if [ -f "$KEYMAP_FILE" ]; then
             echo "Converting $KEYMAP_FILE from US to JIS layout..."
             
-            # 置換ルール
-            sed -i 's/&kp AT/&kp MINUS/g'       $KEYMAP_FILE # US [@] -> JIS [-] (ほ) で [@] を出力
-            sed -i 's/&kp CARET/&kp EQUAL/g'    $KEYMAP_FILE # US [^] -> JIS [=] (へ) で [^] を出力
-            sed -i 's/&kp AMPS/&kp CARET/g'     $KEYMAP_FILE # US [&] -> JIS [^] (や) で [&] を出力
-            sed -i 's/&kp ASTRK/&kp AMPS/g'     $KEYMAP_FILE # US [*] -> JIS [&] (ゆ) で [*] を出力
-            sed -i 's/&kp LPAR/&kp ASTRK/g'     $KEYMAP_FILE # US [(] -> JIS [*] (よ) で [(] を出力
-            sed -i 's/&kp RPAR/&kp LPAR/g'      $KEYMAP_FILE # US [)] -> JIS [(] (を) で [)] を出力
-            sed -i 's/&kp MINUS/&kp RPAR/g'     $KEYMAP_FILE # US [-] -> JIS [)] (わ) で [-] を出力
-            sed -i 's/&kp EQUAL/&kp MINUS/g'    $KEYMAP_FILE # US [=] -> JIS [-] (ほ) で [=] を出力
-            sed -i 's/&kp PLUS/&kp SQT/g'       $KEYMAP_FILE # US [+] -> JIS ['] (け) で [+] を出力
+            sed -i 's/&kp AT/&kp MINUS/g'       $KEYMAP_FILE
+            sed -i 's/&kp CARET/&kp EQUAL/g'    $KEYMAP_FILE
+            sed -i 's/&kp AMPS/&kp CARET/g'     $KEYMAP_FILE
+            sed -i 's/&kp ASTRK/&kp AMPS/g'     $KEYMAP_FILE
+            sed -i 's/&kp LPAR/&kp ASTRK/g'     $KEYMAP_FILE
+            sed -i 's/&kp RPAR/&kp LPAR/g'      $KEYMAP_FILE
+            sed -i 's/&kp MINUS/&kp RPAR/g'     $KEYMAP_FILE
+            sed -i 's/&kp EQUAL/&kp MINUS/g'    $KEYMAP_FILE
+            sed -i 's/&kp PLUS/&kp SQT/g'       $KEYMAP_FILE
             
-            sed -i 's/&kp LBKT/&kp REUSABLE_REPLACE_LBKT/g' $KEYMAP_FILE # 一時退避
-            sed -i 's/&kp RBKT/&kp BSLH/g'      $KEYMAP_FILE # US []] -> JIS [\] (む) で []] を出力
-            sed -i 's/&kp REUSABLE_REPLACE_LBKT/&kp RBKT/g' $KEYMAP_FILE # US [[] -> JIS []] (む) で [[] を出力
+            sed -i 's/&kp LBKT/&kp REUSABLE_REPLACE_LBKT/g' $KEYMAP_FILE
+            sed -i 's/&kp RBKT/&kp BSLH/g'      $KEYMAP_FILE
+            sed -i 's/&kp REUSABLE_REPLACE_LBKT/&kp RBKT/g' $KEYMAP_FILE
             
-            sed -i 's/&kp BSLH/&kp INTERNATIONAL_1/g' $KEYMAP_FILE # US [\] -> JIS [\_] (ろ) で [\] を出力
-            sed -i 's/&kp SQT/&kp COLON/g'      $KEYMAP_FILE # US ['] -> JIS [:] (け) で ['] を出力
-            sed -i 's/&kp COLON/&kp ASTRK/g'    $KEYMAP_FILE # US [:] -> JIS [*] (け) で [:] を出力
-            sed -i 's/&kp SEMI/&kp PLUS/g'      $KEYMAP_FILE # US [;] -> JIS [+] (れ) で [;] を出力
-            sed -i 's/&kp TILDE/&kp EQUAL/g'    $KEYMAP_FILE # US [~] -> JIS [=] (へ) で [~] を出力
-            sed -i 's/&kp GRAVE/&kp SQT/g'      $KEYMAP_FILE # US [`] -> JIS ['] (け) で [`] を出力
+            sed -i 's/&kp BSLH/&kp INTERNATIONAL_1/g' $KEYMAP_FILE
+            sed -i 's/&kp SQT/&kp COLON/g'      $KEYMAP_FILE
+            sed -i 's/&kp COLON/&kp ASTRK/g'    $KEYMAP_FILE
+            sed -i 's/&kp SEMI/&kp PLUS/g'      $KEYMAP_FILE
+            sed -i 's/&kp TILDE/&kp EQUAL/g'    $KEYMAP_FILE
+            sed -i 's/&kp GRAVE/&kp SQT/g'      $KEYMAP_FILE
             
             echo "Conversion complete!"
           else
             echo "Warning: $KEYMAP_FILE not found."
           fi
 
-      # 変更があれば自動でコミットしてリポジトリに反映
-      - name: Commit and Push changes
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          if ! git diff --exit-code; then
-            git add config/roBa.keymap
-            git commit -m "[JIS Convert] Auto convert keymap to JIS"
-            git push origin HEAD:${{ github.ref }}
-          else
-            echo "No changes to commit"
-          fi
-
-  # 変更された最新リポジトリを使い、公式Reusableでビルドする
-  build:
-    needs: prepare_jis
-    # 常に最新に変換されたブランチからビルドするため、元の実行がスキップされてもこちらは動かす
-    if: always() && (needs.prepare_jis.result == 'success' || needs.prepare_jis.result == 'skipped')
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3-branch
-    with:
-      archive_name: "roBa_firmware"
-    secrets: inherit
+      # 公式のビルドエンジンでファームウェアを作成
+      - name: Build ZMK firmware
+        uses: zmkfirmware/zmk-build-action@v3
+        with:
+          name: 'roBa_firmware'
+          board: ${{ matrix.board }}
+          shield: ${{ matrix.shield }}
+          snippet: ${{ matrix.snippet }}
+          config_path: 'config'
