@@ -6,17 +6,15 @@ jobs:
   # JIS配列を作成
   prepare_jis:
     runs-on: ubuntu-latest
+    outputs:
+      artifact_name: "jis-config-artifact"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # ビルド用の「jis_config」フォルダを作成してコピー
       - name: Automatically Convert US Keymap to JIS
         run: |
-          mkdir -p jis_config
-          cp -r config/* jis_config/
-          
-          KEYMAP_FILE="jis_config/roBa.keymap"
+          KEYMAP_FILE="config/roBa.keymap"
           if [ -f "$KEYMAP_FILE" ]; then
             echo "Converting $KEYMAP_FILE from US to JIS layout..."
             
@@ -43,31 +41,27 @@ jobs:
             sed -i 's/&kp GRAVE/&kp SQT/g'      $KEYMAP_FILE
             
             echo "Conversion complete!"
-          else
-            echo "No keymap file found, skipping conversion."
           fi
 
-      # 変更があればコミット
-      - name: Commit and Push changes
+      # 既存の「config」フォルダの名前を、「jis_config」にリネーム
+      - name: Rename config folder for build target
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          
-          # jis_config フォルダをメインブランチにPush
-          git add jis_config/
-          if ! git diff --cached --exit-code; then
-            git commit -m "[JIS-Build] Update converted JIS config"
-            git push origin HEAD:${{ github.ref }}
-          else
-            echo "No changes to commit"
-          fi
+          mv config jis_config
 
-  # JIS化されたフォルダを指定してビルド
+      # JIS置換・リネームが終わった状態をArtifactに
+      - name: Upload temporary converted config
+        uses: actions/upload-artifact@v4
+        with:
+          name: "jis-config-artifact"
+          path: .
+          include-hidden-files: true
+
+  # JISファイルをビルド
   build:
     needs: prepare_jis
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3-branch
     with:
-      # jis_config」を読込
-      config_path: "jis_config"
       archive_name: "roBa_firmware"
+      build_matrix_path: "jis-config-artifact"
+      config_path: "jis_config"
     secrets: inherit
