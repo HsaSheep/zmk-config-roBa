@@ -23,7 +23,7 @@
             #binding-cells = <1>;
             label = "LAYOUT_SHIFT_KEY_PRESS";
 
-            key-press-behavior = <&original_key_press>;
+            key-press-behaviors = <&original_key_press>;
             toggle-behavior = <&tog_ls>;
         };
     };
