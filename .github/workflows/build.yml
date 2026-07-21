@@ -80,7 +80,7 @@ jobs:
 
       # 出来上がったファームウェア（UF2等）をダウンロードできるように保存
       - name: Upload firmware
-        uses: actions/artifacts@v4
+        uses: actions/upload-artifact@v4
         with:
           name: 'roBa_firmware_${{ matrix.shield }}'
           path: build/zephyr/zmk.*
