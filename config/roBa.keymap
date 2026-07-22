@@ -117,7 +117,7 @@
         };
     };
 
-    behaviors{
+    behaviors {
 　      init_layout_shift: init_layout_shift {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
