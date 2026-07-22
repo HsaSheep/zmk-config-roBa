@@ -123,7 +123,7 @@
             #binding-cells = <2>;
             flavor = "tap-preferred";
             tapping-term-ms = <0>;
-            bindings = <&tog_ls_on>, <&to 0>;
+            bindings = <&tog_ls_on, &to 0>;
         };
     };
 
