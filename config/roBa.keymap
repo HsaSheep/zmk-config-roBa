@@ -119,10 +119,9 @@
 
     behaviors {
         init_layout_shift: init_layout_shift {
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
-            flavor = "tap-preferred";
-            tapping-term-ms = <0>;
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <50>;
             bindings = <&tog_ls_on>, <&to_layer_0>;
         };
     };
@@ -132,11 +131,10 @@
 
         init_layer {
             bindings = <
-&init_layout_shift 0 0 // 起動時レイアウト変換有効化  
-&trans  &trans  &trans  &trans                       &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans      &trans   &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans      &trans   &trans                          &trans
+&init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift                       &init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift
+&init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift      &init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift
+&init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift      &init_layout_shift   &init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift
+&init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift  &init_layout_shift      &init_layout_shift   &init_layout_shift                          &init_layout_shift
             >;
         };
 
