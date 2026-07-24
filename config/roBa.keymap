@@ -89,6 +89,11 @@
             bindings = <&kp EQUAL>;
             key-positions = <24 25>;
         };
+
+        insert {
+            bindings = <&kp INSERT>;
+            key-positions = <16 28>;
+        };
     };
 
     macros {
