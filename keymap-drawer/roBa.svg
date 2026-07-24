@@ -342,6 +342,16 @@ path.combo {
 <rect rx="6" ry="6" x="154" y="131" width="28" height="26" class="combo"/>
 <text x="168" y="144" class="combo tap">=</text>
 </g>
+<g class="combo combopos-5">
+<rect rx="6" ry="6" x="434" y="127" width="28" height="26" class="combo"/>
+<text x="448" y="140" class="combo tap">INSERT</text>
+</g>
+<g class="combo combopos-6">
+<rect rx="6" ry="6" x="295" y="127" width="28" height="26" class="combo"/>
+<text x="309" y="140" class="combo tap">
+<tspan x="309" dy="-0.6em">KP</tspan><tspan x="309" dy="1.2em">NUMLOCK</tspan>
+</text>
+</g>
 </g>
 </g>
 <g transform="translate(30, 339)" class="layer-FUNCTION">
@@ -539,6 +549,16 @@ path.combo {
 <g class="combo combopos-4">
 <rect rx="6" ry="6" x="154" y="131" width="28" height="26" class="combo"/>
 <text x="168" y="144" class="combo tap">=</text>
+</g>
+<g class="combo combopos-5">
+<rect rx="6" ry="6" x="434" y="127" width="28" height="26" class="combo"/>
+<text x="448" y="140" class="combo tap">INSERT</text>
+</g>
+<g class="combo combopos-6">
+<rect rx="6" ry="6" x="295" y="127" width="28" height="26" class="combo"/>
+<text x="309" y="140" class="combo tap">
+<tspan x="309" dy="-0.6em">KP</tspan><tspan x="309" dy="1.2em">NUMLOCK</tspan>
+</text>
 </g>
 </g>
 </g>
@@ -761,6 +781,16 @@ path.combo {
 <rect rx="6" ry="6" x="154" y="131" width="28" height="26" class="combo"/>
 <text x="168" y="144" class="combo tap">=</text>
 </g>
+<g class="combo combopos-5">
+<rect rx="6" ry="6" x="434" y="127" width="28" height="26" class="combo"/>
+<text x="448" y="140" class="combo tap">INSERT</text>
+</g>
+<g class="combo combopos-6">
+<rect rx="6" ry="6" x="295" y="127" width="28" height="26" class="combo"/>
+<text x="309" y="140" class="combo tap">
+<tspan x="309" dy="-0.6em">KP</tspan><tspan x="309" dy="1.2em">NUMLOCK</tspan>
+</text>
+</g>
 </g>
 </g>
 <g transform="translate(30, 1017)" class="layer-ARROW">
@@ -975,6 +1005,16 @@ path.combo {
 <rect rx="6" ry="6" x="154" y="131" width="28" height="26" class="combo"/>
 <text x="168" y="144" class="combo tap">=</text>
 </g>
+<g class="combo combopos-5">
+<rect rx="6" ry="6" x="434" y="127" width="28" height="26" class="combo"/>
+<text x="448" y="140" class="combo tap">INSERT</text>
+</g>
+<g class="combo combopos-6">
+<rect rx="6" ry="6" x="295" y="127" width="28" height="26" class="combo"/>
+<text x="309" y="140" class="combo tap">
+<tspan x="309" dy="-0.6em">KP</tspan><tspan x="309" dy="1.2em">NUMLOCK</tspan>
+</text>
+</g>
 </g>
 </g>
 <g transform="translate(30, 1355)" class="layer-MOUSE">
@@ -1180,6 +1220,16 @@ path.combo {
 <rect rx="6" ry="6" x="154" y="131" width="28" height="26" class="combo"/>
 <text x="168" y="144" class="combo tap">=</text>
 </g>
+<g class="combo combopos-5">
+<rect rx="6" ry="6" x="434" y="127" width="28" height="26" class="combo"/>
+<text x="448" y="140" class="combo tap">INSERT</text>
+</g>
+<g class="combo combopos-6">
+<rect rx="6" ry="6" x="295" y="127" width="28" height="26" class="combo"/>
+<text x="309" y="140" class="combo tap">
+<tspan x="309" dy="-0.6em">KP</tspan><tspan x="309" dy="1.2em">NUMLOCK</tspan>
+</text>
+</g>
 </g>
 </g>
 <g transform="translate(30, 1694)" class="layer-SCROLL">
@@ -1377,6 +1427,16 @@ path.combo {
 <g class="combo combopos-4">
 <rect rx="6" ry="6" x="154" y="131" width="28" height="26" class="combo"/>
 <text x="168" y="144" class="combo tap">=</text>
+</g>
+<g class="combo combopos-5">
+<rect rx="6" ry="6" x="434" y="127" width="28" height="26" class="combo"/>
+<text x="448" y="140" class="combo tap">INSERT</text>
+</g>
+<g class="combo combopos-6">
+<rect rx="6" ry="6" x="295" y="127" width="28" height="26" class="combo"/>
+<text x="309" y="140" class="combo tap">
+<tspan x="309" dy="-0.6em">KP</tspan><tspan x="309" dy="1.2em">NUMLOCK</tspan>
+</text>
 </g>
 </g>
 </g>
@@ -1585,6 +1645,16 @@ path.combo {
 <rect rx="6" ry="6" x="154" y="131" width="28" height="26" class="combo"/>
 <text x="168" y="144" class="combo tap">=</text>
 </g>
+<g class="combo combopos-5">
+<rect rx="6" ry="6" x="434" y="127" width="28" height="26" class="combo"/>
+<text x="448" y="140" class="combo tap">INSERT</text>
+</g>
+<g class="combo combopos-6">
+<rect rx="6" ry="6" x="295" y="127" width="28" height="26" class="combo"/>
+<text x="309" y="140" class="combo tap">
+<tspan x="309" dy="-0.6em">KP</tspan><tspan x="309" dy="1.2em">NUMLOCK</tspan>
+</text>
+</g>
 </g>
 </g>
 <g transform="translate(30, 2372)" class="layer-7">
@@ -1783,6 +1853,16 @@ path.combo {
 <g class="combo combopos-4">
 <rect rx="6" ry="6" x="154" y="131" width="28" height="26" class="combo"/>
 <text x="168" y="144" class="combo tap">=</text>
+</g>
+<g class="combo combopos-5">
+<rect rx="6" ry="6" x="434" y="127" width="28" height="26" class="combo"/>
+<text x="448" y="140" class="combo tap">INSERT</text>
+</g>
+<g class="combo combopos-6">
+<rect rx="6" ry="6" x="295" y="127" width="28" height="26" class="combo"/>
+<text x="309" y="140" class="combo tap">
+<tspan x="309" dy="-0.6em">KP</tspan><tspan x="309" dy="1.2em">NUMLOCK</tspan>
+</text>
 </g>
 </g>
 </g>

@@ -363,3 +363,7 @@ combos:
   k: '"'
 - p: [24, 25]
   k: '='
+- p: [16, 28]
+  k: INSERT
+- p: [15, 27]
+  k: KP NUMLOCK
