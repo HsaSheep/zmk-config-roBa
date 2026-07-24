@@ -3,11 +3,16 @@ name: "Draw Keymap"
 on:
   workflow_dispatch:
   # push時に自動で実行する場合は、以下のコメントアウトを外す
-  push:
-    paths:
-      - "config/roBa.keymap"
-      - "keymap_drawer.config.yaml"
-      - "config/roBa.dtsi"
+  # push:
+  #   paths:
+  #     - "config/roBa.keymap"
+  #     - "keymap_drawer.config.yaml"
+  #     - "config/roBa.dtsi"
+  # build成功時に実行したい場合は、以下のコメントアウトを外す
+  workflow_run: 
+    workflows: ["build"] # トリガーにしたいYAML内の「name:」を指定
+    types: 
+      - completed
 
 jobs:
   draw:
