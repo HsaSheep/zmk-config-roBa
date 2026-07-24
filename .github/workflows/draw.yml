@@ -44,9 +44,9 @@ jobs:
           git config --global user.email "github-actions[bot]@://github.com"
           
           # 変更をリモートから最新状態に更新
-          git stash
-          git pull origin ${{ github.head_ref || github.ref }} --rebase
-          git stash pop
+          #git stash
+          git pull origin ${{ github.head_ref || github.ref }} --rebase --autostash
+          #git stash pop
           # keymap-drawer フォルダ内のSVGをすべてPNGに変換
           for svg in keymap-drawer/*.svg; do
             if [ -f "$svg" ]; then
@@ -63,9 +63,9 @@ jobs:
           #git config --global user.email "github-actions[bot]@://github.com"
           
           # 変更をリモートから最新状態に更新
-          git stash
-          git pull origin ${{ github.head_ref || github.ref }} --rebase
-          git stash pop
+          #git stash
+          git pull origin ${{ github.head_ref || github.ref }} --rebase --autostash
+          #git stash pop
 
           git add keymap-drawer/*.png
           # 差分がある場合のみコミットしてPush
