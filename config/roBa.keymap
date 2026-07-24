@@ -94,6 +94,11 @@
             bindings = <&kp INSERT>;
             key-positions = <16 28>;
         };
+
+        numlock {
+            bindings = <&kp KP_NUMLOCK>;
+            key-positions = <15 27>;
+        };
     };
 
     macros {
