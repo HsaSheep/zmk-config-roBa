@@ -99,6 +99,21 @@
             bindings = <&kp KP_NUMLOCK>;
             key-positions = <15 27>;
         };
+
+        LeftClick {
+            bindings = <&mkp MB1>;
+            key-positions = <18 18 19>;
+        };
+
+        RightClick {
+            bindings = <&mkp MB2>;
+            key-positions = <19 20>;
+        };
+
+        MiddleClick {
+            bindings = <&mkp MB3>;
+            key-positions = <31 19>;
+        };
     };
 
     macros {
@@ -202,10 +217,10 @@
 
         MOUSE {
             bindings = <
-&trans  &trans  &trans  &trans  &trans                      &trans  &trans    &mkp MB3  &trans    &trans
-&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &mkp MB1  &trans    &mkp MB2  &trans
-&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans    &trans    &trans    &trans
-&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans                                &trans
+&trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans                          &trans
             >;
         };
 
