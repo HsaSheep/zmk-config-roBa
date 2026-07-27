@@ -20,7 +20,7 @@ layers:
   - '-'
   - H
   - J
-  - K
+  - {t: K, h: SCROLL}
   - L
   - ''''
   - {t: Z, h: LEFT SHIFT}
@@ -32,7 +32,7 @@ layers:
   - ;
   - N
   - M
-  - {t: ',', h: SCROLL}
+  - ','
   - .
   - {t: /, h: LEFT SHIFT}
   - LCTRL
@@ -240,19 +240,19 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
   - {type: held}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
@@ -367,7 +367,7 @@ combos:
   k: INSERT
 - p: [15, 27]
   k: KP NUMLOCK
-- p: [18, 18, 19]
+- p: [18, 19]
   k: '&mkp MB1'
 - p: [19, 20]
   k: '&mkp MB2'
