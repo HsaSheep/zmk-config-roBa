@@ -100,27 +100,27 @@
             key-positions = <15 27>;
         };
 
-        LeftClick {
+        left_click {
             bindings = <&mkp MB1>;
             key-positions = <18 18 19>;
         };
 
-        RightClick {
+        right_click {
             bindings = <&mkp MB2>;
             key-positions = <19 20>;
         };
 
-        MiddleClick {
+        middle_click {
             bindings = <&mkp MB3>;
             key-positions = <31 19>;
         };
 
-        MB4Click {
+        mb4_click {
             bindings = <&mkp MB4>;
             key-positions = <30 31>;
         };
 
-        MB5Click {
+        mb5_click {
             bindings = <&mkp MB5>;
             key-positions = <31 32>;
         };
